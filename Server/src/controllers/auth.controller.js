@@ -87,7 +87,12 @@ async function registerFoodPartner(req, res) {
     email,
     password: hashedPassword,
   });
-
+  const token = jwt.sign(
+    {
+      id: foodPartner._id,
+    },
+    process.env.JWT_SECRET
+  );
   res.cookie("token", token);
   res.status(201).json({
     message: "Food Partner registered successfully",
@@ -138,4 +143,5 @@ module.exports = {
   logoutUser,
   registerFoodPartner,
   loginFoodPartner,
+  logoutFoodPartner,
 };
