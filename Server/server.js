@@ -1,6 +1,8 @@
+require("dotenv").config(); // Load env first
+// In server.js if you require("./src/app") before calling require("dotenv").config() that loads routes/controllers/services, which initialize ImageKit while process.env.* is still undefined. Hence “Missing publicKey”.
 const app = require("./src/app");
 const connectDB = require("./src/db/db");
-require("dotenv").config();
+
 connectDB();
 
 app.get("/", (req, res) => {
