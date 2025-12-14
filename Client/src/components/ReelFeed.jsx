@@ -146,7 +146,7 @@ const ReelFeed = ({
                 {item.foodPartner && (
                   <Link
                     className="reel-btn"
-                    to={"/food-partner/" + item.foodPartner}
+                    to={"/foodpartner/" + item.foodPartner}
                     aria-label="Visit store"
                   >
                     Visit store

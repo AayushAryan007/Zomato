@@ -74,3 +74,86 @@ const Profile = () => {
 };
 
 export default Profile;
+// //////////////////////////////////////////////
+// import React, { useState, useEffect, use } from "react";
+// import "../../styles/profile.css";
+// import { useParams } from "react-router-dom";
+// import axios from "axios";
+
+// const Profile = () => {
+//   const { id } = useParams();
+//   const [profile, setProfile] = useState(null);
+//   const [videos, setVideos] = useState([]); // ensure array
+
+//   useEffect(() => {
+//     async function load() {
+//       try {
+//         const res = await axios.get(
+//           `http://localhost:3000/api/foodpartner/${id}`,
+//           {
+//             withCredentials: true,
+//           }
+//         );
+//         // Backend returns { foodPartner, foods } per your controller
+//         const { foodPartner, foods } = res.data;
+//         setProfile(foodPartner || null);
+//         setVideos(Array.isArray(foods) ? foods : []);
+//       } catch (err) {
+//         setProfile(null);
+//         setVideos([]);
+//         console.error(err);
+//       }
+//     }
+//     load();
+//   }, [id]);
+
+//   return (
+//     <main className="profile-page">
+//       <section className="profile-header">
+//         <div className="profile-meta">
+//           <img
+//             className="profile-avatar"
+//             src="https://images.unsplash.com/photo-1754653099086-3bddb9346d37?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxmZWF0dXJlZC1waG90b3MtZmVlZHw0Nnx8fGVufDB8fHx8fA%3D%3D"
+//             alt=""
+//           />
+
+//           <div className="profile-info">
+//             <h1 className="profile-pill profile-business" title="Business name">
+//               {profile?.name}
+//             </h1>
+//             <p className="profile-pill profile-address" title="Address">
+//               {profile?.address}
+//             </p>
+//           </div>
+//         </div>
+
+//         <div className="profile-stats" role="list" aria-label="Stats">
+//           <div className="profile-stat" role="listitem">
+//             <span className="profile-stat-label">total meals</span>
+//             <span className="profile-stat-value">{profile?.totalMeals}</span>
+//           </div>
+//           <div className="profile-stat" role="listitem">
+//             <span className="profile-stat-label">customer served</span>
+//             <span className="profile-stat-value">
+//               {profile?.customersServed}
+//             </span>
+//           </div>
+//         </div>
+//       </section>
+
+//       <hr className="profile-sep" />
+
+//       <section className="profile-grid" aria-label="Videos">
+//         {videos.length === 0 ? (
+//           <div>No videos yet.</div>
+//         ) : (
+//           videos.map((v) => (
+//             <div key={v._id}>{/* render v.video, v.description, etc. */}</div>
+//           ))
+//         )}
+//       </section>
+//     </main>
+//   );
+// };
+
+// export default Profile;
