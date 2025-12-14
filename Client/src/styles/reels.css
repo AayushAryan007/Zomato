@@ -135,6 +135,8 @@
 }
 
 .reel-action {
+  position: relative; /* create stacking context */
+  z-index: 100; /* bring above overlapping content */
   width: 48px;
   height: 48px;
   border-radius: 999px;
@@ -158,6 +160,8 @@
 }
 
 .reel-action-group {
+  position: relative;
+  z-index: 100;
   display: flex;
   flex-direction: column;
   align-items: center;

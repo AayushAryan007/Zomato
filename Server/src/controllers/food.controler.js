@@ -3,6 +3,7 @@ const storageService = require("../services/storage.service");
 const { v4: uuidv4 } = require("uuid");
 const likesModel = require("../models/likes.model");
 const savesModel = require("../models/save.model");
+const commentModel = require("../models/comment.model");
 async function createFood(req, res) {
   try {
     if (!req.file) {
@@ -30,11 +31,27 @@ async function createFood(req, res) {
 }
 
 async function getFoodItems(req, res) {
-  const foodItems = await foodModel.find({});
-  res.status(200).json({
-    message: "Food items fetched successfully",
-    foodItems,
-  });
+  try {
+    const foods = await foodModel.find({}).lean();
+    const ids = foods.map((f) => f._id);
+    const counts = await commentModel.aggregate([
+      { $match: { food: { $in: ids } } },
+      { $group: { _id: "$food", count: { $sum: 1 } } },
+    ]);
+    const map = new Map(counts.map((c) => [String(c._id), c.count]));
+    const withCounts = foods.map((f) => ({
+      ...f,
+      commentsCount: map.get(String(f._id)) || 0,
+    }));
+    return res
+      .status(200)
+      .json({
+        message: "Food items fetched successfully",
+        foodItems: withCounts,
+      });
+  } catch (err) {
+    return res.status(500).json({ message: "Server error" });
+  }
 }
 
 async function likeFood(req, res) {
@@ -105,10 +122,50 @@ async function getSavedFoods(req, res) {
   }
 }
 
+// Add a comment to a food (User)
+async function addComment(req, res) {
+  try {
+    const { foodId, text } = req.body;
+    if (!foodId || !text)
+      return res.status(400).json({ message: "foodId and text are required" });
+
+    // optional: ensure food exists
+    const food = await foodModel.findById(foodId);
+    if (!food) return res.status(404).json({ message: "Food not found" });
+
+    const comment = await commentModel.create({
+      food: foodId,
+      user: req.user._id,
+      text,
+    });
+
+    return res.status(201).json({ message: "Comment added", comment });
+  } catch (err) {
+    return res.status(500).json({ message: "Server error" });
+  }
+}
+
+// List comments for a food (reverse chronological)
+async function getComments(req, res) {
+  try {
+    const { foodId } = req.params;
+    const comments = await commentModel
+      .find({ food: foodId })
+      .sort({ createdAt: -1 })
+      .lean();
+
+    return res.status(200).json({ message: "Comments fetched", comments });
+  } catch (err) {
+    return res.status(500).json({ message: "Server error" });
+  }
+}
+
 module.exports = {
   createFood,
   getFoodItems,
   likeFood,
   saveFood,
-  getSavedFoods, // add export
+  getSavedFoods,
+  addComment,
+  getComments,
 };

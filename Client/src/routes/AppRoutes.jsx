@@ -10,7 +10,7 @@ import Saved from "../pages/general/Saved";
 import BottomNav from "../components/BottomNav";
 import CreateFood from "../pages/food-partner/CreateFood";
 import Profile from "../pages/food-partner/Profile";
-
+import Comments from "../pages/general/Comments";
 const AppRoutes = () => {
   return (
     <Router>
@@ -42,6 +42,7 @@ const AppRoutes = () => {
         />
         <Route path="/create-food" element={<CreateFood />} />
         <Route path="/foodpartner/:id" element={<Profile />} />
+        <Route path="/food/:foodId/comments" element={<Comments />} />
       </Routes>
     </Router>
   );

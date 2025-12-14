@@ -38,4 +38,16 @@ router.get(
   foodController.getSavedFoods
 );
 
+// comments: add and list (user)
+router.post(
+  "/comments",
+  authMiddleware.authUserMiddleware,
+  foodController.addComment
+);
+router.get(
+  "/:foodId/comments",
+  authMiddleware.authUserMiddleware,
+  foodController.getComments
+);
+
 module.exports = router;
