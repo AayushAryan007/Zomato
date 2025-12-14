@@ -1,53 +1,49 @@
 import React, { useEffect, useState } from "react";
-import "../../styles/reels.css";
+import "../../styles/profile.css"; // reuse grid styles from profile if available
 import axios from "axios";
-import ReelFeed from "../../components/ReelFeed";
 
 const Saved = () => {
-  const [videos, setVideos] = useState([]);
+  const [items, setItems] = useState([]);
 
   useEffect(() => {
-    axios
-      .get("http://localhost:3000/api/food/save", { withCredentials: true })
-      .then((response) => {
-        const savedFoods = response.data.savedFoods.map((item) => ({
-          _id: item.food._id,
-          video: item.food.video,
-          description: item.food.description,
-          likeCount: item.food.likeCount,
-          savesCount: item.food.savesCount,
-          commentsCount: item.food.commentsCount,
-          foodPartner: item.food.foodPartner,
-        }));
-        setVideos(savedFoods);
-      });
+    async function load() {
+      try {
+        const res = await axios.get("http://localhost:3000/api/food/saved", {
+          withCredentials: true,
+        });
+        setItems(Array.isArray(res.data.foods) ? res.data.foods : []);
+      } catch (err) {
+        console.error(err);
+        setItems([]);
+      }
+    }
+    load();
   }, []);
 
-  const removeSaved = async (item) => {
-    try {
-      await axios.post(
-        "http://localhost:3000/api/food/save",
-        { foodId: item._id },
-        { withCredentials: true }
-      );
-      setVideos((prev) =>
-        prev.map((v) =>
-          v._id === item._id
-            ? { ...v, savesCount: Math.max(0, (v.savesCount ?? 1) - 1) }
-            : v
-        )
-      );
-    } catch {
-      // noop
-    }
-  };
-
   return (
-    <ReelFeed
-      items={videos}
-      onSave={removeSaved}
-      emptyMessage="No saved videos yet."
-    />
+    <div className="profile-page">
+      <header className="profile-header">
+        <h1 className="profile-title">Saved</h1>
+        <p className="profile-subtitle">Your saved videos</p>
+      </header>
+
+      <section className="profile-grid" aria-label="Saved Videos">
+        {items.length === 0 ? (
+          <div className="profile-empty">No saved videos yet.</div>
+        ) : (
+          items.map((v) => (
+            <div key={v._id} className="profile-grid-item">
+              <video
+                className="profile-grid-video"
+                style={{ objectFit: "cover", width: "100%", height: "100%" }}
+                src={v.video}
+                muted
+              ></video>
+            </div>
+          ))
+        )}
+      </section>
+    </div>
   );
 };
 
