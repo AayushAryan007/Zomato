@@ -19,7 +19,7 @@ const FoodPartnerRegister = () => {
 
     axios
       .post(
-        "http://localhost:3000/api/auth/food-partner/register",
+        "http://localhost:3000/api/auth/foodpartner/register",
         {
           name: businessName,
           contactName,
