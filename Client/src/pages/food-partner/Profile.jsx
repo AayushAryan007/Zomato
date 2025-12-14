@@ -14,8 +14,13 @@ const Profile = () => {
         withCredentials: true,
       })
       .then((response) => {
-        setProfile(response.data.foodPartner);
-        setVideos(response.data.foodPartner.foodItems);
+        const { foodPartner, foods } = response.data;
+        setProfile(foodPartner || null);
+        setVideos(Array.isArray(foods) ? foods : []);
+      })
+      .catch(() => {
+        setProfile(null);
+        setVideos([]);
       });
   }, [id]);
 
@@ -56,18 +61,20 @@ const Profile = () => {
       <hr className="profile-sep" />
 
       <section className="profile-grid" aria-label="Videos">
-        {videos.map((v) => (
-          <div key={v.id} className="profile-grid-item">
-            {/* Placeholder tile; replace with <video> or <img> as needed */}
-
-            <video
-              className="profile-grid-video"
-              style={{ objectFit: "cover", width: "100%", height: "100%" }}
-              src={v.video}
-              muted
-            ></video>
-          </div>
-        ))}
+        {videos.length === 0 ? (
+          <div>No videos yet.</div>
+        ) : (
+          videos.map((v) => (
+            <div key={v._id} className="profile-grid-item">
+              <video
+                className="profile-grid-video"
+                style={{ objectFit: "cover", width: "100%", height: "100%" }}
+                src={v.video}
+                muted
+              ></video>
+            </div>
+          ))
+        )}
       </section>
     </main>
   );

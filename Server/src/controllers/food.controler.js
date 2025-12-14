@@ -3,25 +3,29 @@ const storageService = require("../services/storage.service");
 const { v4: uuidv4 } = require("uuid");
 
 async function createFood(req, res) {
-  // res.send("Create Food Endpoint");
-  // console.log(req.body);
-  // console.log(req.file);
-  const fileUploadResult = await storageService.uploadFile(
-    req.file.buffer,
-    uuidv4()
-  );
-  const foodItem = await foodModel.create({
-    name: req.body.name,
-    description: req.body.description,
-    video: fileUploadResult.url,
-    foodPartner: req.foodPartner._id,
-  });
+  try {
+    if (!req.file) {
+      return res
+        .status(400)
+        .json({ message: "No file uploaded. Use field 'video'." });
+    }
+    const upload = await storageService.uploadFile(
+      req.file.buffer,
+      `food-${uuidv4()}`
+    );
 
-  // console.log(fileUploadResult);
-  res.status(201).json({
-    message: "Food created successfully",
-    food: foodItem,
-  });
+    const { name, description } = req.body;
+    const food = await foodModel.create({
+      name,
+      description,
+      video: upload.url, // save video URL
+      foodPartner: req.foodPartner._id, // link to partner
+    });
+
+    return res.status(201).json({ message: "Food created", food });
+  } catch (err) {
+    return res.status(500).json({ message: err.message });
+  }
 }
 
 async function getFoodItems(req, res) {
